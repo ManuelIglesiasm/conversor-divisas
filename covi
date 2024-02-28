@@ -1,0 +1,102 @@
+import requests
+from tkinter import *
+from tkinter import ttk 
+
+API_KEY = "386a1d0b1c69cc95384c40e9"
+URL = f"https://v6.exchangerate-api.com/v6/{API_KEY}/latest/USD"
+def get_currency_data():
+    response = requests.get(URL)
+    if response.status_code == 200:
+        data = response.json()
+        return data.get("conversion_rates", {})
+    else:
+        print("Error al obtener los datos de las monedas")
+        return {}
+
+def main():
+    currency_data = get_currency_data()
+    if currency_data:
+        print("Códigos de las monedas y sus países asociados:")
+        for currency_code, currency_name in currency_data.items():
+            print(f"{currency_code}: {currency_name}")
+    else:
+        print("No se pudieron obtener los datos de las monedas")
+
+    ventana = Tk()
+    ventana.geometry("400x280")
+    ventana.title("Conversor de divisas")
+
+    lbl = Label(ventana, text= "Conversor de Divisas")
+    lbl.pack()
+
+    lbl = Label(ventana, text= "Cantidad:")
+    lbl.place(x=10, y=20, width=100, height= 30)
+    txt = Entry(ventana, bg= "#F1F1F1")
+    txt.place(x=110, y=20, width=100, height= 30)
+
+    lbl1 = Label(ventana, text= "Moneda origen:")
+    lbl1.place(x=10, y=60, width=100, height= 30)
+    currency_names = list(currency_data.keys())
+    currency_combobox = ttk.Combobox(ventana, width=17, height= 30)
+    currency_combobox["values"] = currency_names
+    currency_combobox.place(x=110, y=60)
+
+    lbl2 = Label(ventana, text= "Moneda destino:")
+    lbl2.place(x=10, y=100, width=100, height= 30)
+    currency_combobox1 = ttk.Combobox(ventana, width=17, height= 30)
+    currency_combobox1["values"] = currency_names
+    currency_combobox1.place(x=110, y=100)
+
+    btn = Button(ventana, text="Convertir")
+    btn.config(bg= "black", fg= "white")
+    btn.place(x=10, y=140, width=100, height= 30)
+
+    lbl4 = Label(ventana, text= "Resultado")
+    lbl4.place(x=10, y=220, width=100, height= 30)
+
+    ventana.mainloop()
+
+if __name__ == "__main__":
+    main()
+
+
+
+"""
+
+def get_rates():
+    response = requests.get(URL)
+    if response.status_code != 200:
+        print("Error al obtener las tasas de cambio")
+        return None
+    data = response.json()
+    return data["conversion_rates"]
+
+def convert_currency(amount, from_currency, to_currency, rates):
+    if from_currency == to_currency:
+        return amount
+    if from_currency == "USD":
+        return amount * rates[to_currency]
+    elif to_currency == "USD":
+        return amount / rates[from_currency]
+    else:
+        return amount / rates[from_currency] * rates[to_currency]
+
+def main():
+    rates = get_rates()
+    if rates:
+        amount = float(input("Introduce la cantidad a convertir: "))
+        from_currency = input("Introduce la moneda desde la cual conviertes: ").upper()
+        to_currency = input("Introduce la moneda a la cual conviertes: ").upper()
+
+        if from_currency not in rates or to_currency not in rates:
+            print("Moneda no válida")
+            return
+
+        result = convert_currency(amount, from_currency, to_currency, rates)
+        print(f"{amount} {from_currency} es igual a {result:.2f} {to_currency}")
+
+if __name__ == "__main__":
+    main()
+
+ventana.mainloop()
+"""
